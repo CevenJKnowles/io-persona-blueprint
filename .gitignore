@@ -1,0 +1,13 @@
+# Ignore system files
+.DS_Store
+Thumbs.db
+
+# Python & Jupyter (just in case)
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+
+# Temp / backup
+*.swp
+*.tmp
+*.bak
