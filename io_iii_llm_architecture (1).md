@@ -7,7 +7,7 @@
 This document defines a **local-first LLM architecture** for **IO-III**, optimised for:
 
 - Manjaro Linux (RTX 2060, 6 GB VRAM, 32 GB RAM)
-- Ollama + LiteLLM execution
+- Ollama + LiteLLM execution or LMStudio
 - Mode-based persona routing (Executor, Explorer, Challenger, Synthesizer, Visionary)
 - Stability, controllability, and drift-resistance
 

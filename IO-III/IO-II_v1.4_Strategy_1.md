@@ -1,6 +1,6 @@
 Context: Proper, Professional Documentation
 
-Objecive: To use the Portfolio file tree (shown below) to document everything that I have already done with teh Io persona (IO-I through to IO-II v1.3). 
+Objecive: To use the Portfolio file tree (shown below) to document everything that I have already done with the Io persona (IO-I through to IO-II v1.3). 
 
 Directory Tree:
 .\

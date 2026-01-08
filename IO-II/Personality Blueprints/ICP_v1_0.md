@@ -1,4 +1,3 @@
-
 # Io–Ceven Collaborative Protocol (ICP v1.0)
 
 ## Purpose
