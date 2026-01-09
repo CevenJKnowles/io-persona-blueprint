@@ -1,22 +1,40 @@
-# Ignore system files
+# ==============================
+# System / editor files
+# ==============================
 .DS_Store
 Thumbs.db
 
-# Python & Jupyter (just in case)
+# ==============================
+# Python & Jupyter
+# ==============================
 __pycache__/
 *.pyc
 .ipynb_checkpoints/
 
-# Temp / backup
+# ==============================
+# Temp / backup files
+# ==============================
 *.swp
 *.tmp
 *.bak
 
-# --- IO-III runtime artifacts (local-only) ---
+# ==============================
+# IO-III runtime artifacts (local-only)
+# ==============================
 /IO-III/runtime/logs/
 /IO-III/runtime/state/
-/IO-III/tests/results/
 
-# Optional local env files (never commit)
+# ==============================
+# IO-III test results (generated, local-only)
+# ==============================
+/IO-III/tests/results/*
+
+# Allow documentation inside otherwise-ignored directory
+!/IO-III/tests/results/
+!/IO-III/tests/results/README.md
+
+# ==============================
+# Local environment files (never commit)
+# ==============================
 .env
 .env.*
