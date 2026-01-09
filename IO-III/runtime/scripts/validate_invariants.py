@@ -3,6 +3,8 @@ from __future__ import annotations
 
 import sys
 import glob
+import os
+import subprocess
 from dataclasses import dataclass
 from typing import Any, Dict, List, Tuple
 
@@ -98,6 +100,75 @@ def assert_yaml_each_has_keys(spec: Dict[str, Any], failure_ctx: Dict[str, str])
     return failures
 
 
+def _git_changed_files(scope: str) -> Tuple[bool, List[str], str]:
+    """
+    Returns (ok, files, error_message).
+    scope: "staged" | "working" | "both"
+    """
+    scope = (scope or "both").strip().lower()
+    if scope not in {"staged", "working", "both"}:
+        return False, [], f"Invalid scope '{scope}'. Use 'staged', 'working', or 'both'."
+
+    def run(cmd: List[str]) -> Tuple[bool, List[str], str]:
+        try:
+            p = subprocess.run(
+                cmd,
+                cwd=os.getcwd(),
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                text=True,
+                check=False,
+            )
+        except Exception as e:
+            return False, [], f"Failed to run git: {e}"
+
+        if p.returncode != 0:
+            return False, [], p.stderr.strip() or f"git exited {p.returncode}"
+        files = [line.strip() for line in p.stdout.splitlines() if line.strip()]
+        return True, files, ""
+
+    files: List[str] = []
+    if scope in {"working", "both"}:
+        ok, out, err = run(["git", "diff", "--name-only"])
+        if not ok:
+            return False, [], f"git diff failed: {err}"
+        files.extend(out)
+
+    if scope in {"staged", "both"}:
+        ok, out, err = run(["git", "diff", "--name-only", "--cached"])
+        if not ok:
+            return False, [], f"git diff --cached failed: {err}"
+        files.extend(out)
+
+    # de-dup
+    files = sorted(set(files))
+    return True, files, ""
+
+
+def assert_git_forbid_paths(spec: Dict[str, Any], failure_ctx: Dict[str, str]) -> List[Failure]:
+    forbidden = spec.get("forbidden_paths", [])
+    scope = spec.get("scope", "both")
+
+    if not isinstance(forbidden, list) or not forbidden:
+        return [Failure(**failure_ctx, message="forbidden_paths must be a non-empty list")]
+
+    ok, changed, err = _git_changed_files(scope)
+    if not ok:
+        return [Failure(**failure_ctx, message=f"Unable to evaluate git changes ({scope}): {err}")]
+
+    hits: List[str] = []
+    for f in changed:
+        for prefix in forbidden:
+            # Normalize to repo-relative, forward-slash
+            pfx = str(prefix).lstrip("./")
+            if f.startswith(pfx):
+                hits.append(f)
+
+    if hits:
+        return [Failure(**failure_ctx, message=f"Forbidden path(s) changed ({scope}): {hits}")]
+    return []
+
+
 def run_invariant(invariant_path: str) -> Tuple[str, str, List[Failure]]:
     inv = load_yaml(invariant_path) or {}
     inv_id = str(inv.get("id", "UNKNOWN"))
@@ -131,6 +202,8 @@ def run_invariant(invariant_path: str) -> Tuple[str, str, List[Failure]]:
                 failures.extend(assert_yaml_has_keys(a, ctx))
             elif atype == "yaml_each_has_keys":
                 failures.extend(assert_yaml_each_has_keys(a, ctx))
+            elif atype == "git_forbid_paths":
+                failures.extend(assert_git_forbid_paths(a, ctx))
             else:
                 failures.append(Failure(**ctx, message=f"Unknown assertion type: {atype!r} (in {invariant_path})"))
         except FileNotFoundError as e:
@@ -142,9 +215,13 @@ def run_invariant(invariant_path: str) -> Tuple[str, str, List[Failure]]:
 
 
 def main() -> int:
-    inv_paths = sorted(glob.glob("./IO-III/tests/invariants/*.yaml") + glob.glob("./IO-II/tests/invariants/*.yaml"))
+    inv_paths = sorted(
+        glob.glob("./IO-III/tests/invariants/*.yaml")
+        + glob.glob("./IO-II/tests/invariants/*.yaml")
+    )
+
     if not inv_paths:
-        print("No invariants found at ./IO-III/tests/invariants/*.yaml")
+        print("No invariants found at ./IO-III/tests/invariants/*.yaml or ./IO-II/tests/invariants/*.yaml")
         return 0
 
     all_failures: List[Failure] = []
