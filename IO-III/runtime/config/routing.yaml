@@ -1,3 +1,26 @@
 ---
-version: "0.1"
-routes: {}
+version: "0.2"
+routes:
+  default:
+    provider: "null"
+    notes: "Default route. NullProvider only in v0.2."
+
+  executor:
+    provider: "null"
+    notes: "Executor mode route (v0.2: NullProvider only)."
+
+  challenger:
+    provider: "null"
+    notes: "Challenger mode route (v0.2: NullProvider only)."
+
+  synthesizer:
+    provider: "null"
+    notes: "Synthesizer mode route (v0.2: NullProvider only)."
+
+  explorer:
+    provider: "null"
+    notes: "Explorer mode route (v0.2: NullProvider only)."
+
+  visionary:
+    provider: "null"
+    notes: "Visionary mode route (v0.2: NullProvider only)."
