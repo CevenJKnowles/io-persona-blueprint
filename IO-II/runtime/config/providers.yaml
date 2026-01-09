@@ -1,0 +1,9 @@
+---
+version: "0.1"
+providers:
+  cloud:
+    enabled: false
+    allowlist: []
+  local:
+    enabled: true
+    backends: []

@@ -142,7 +142,7 @@ def run_invariant(invariant_path: str) -> Tuple[str, str, List[Failure]]:
 
 
 def main() -> int:
-    inv_paths = sorted(glob.glob("./IO-III/tests/invariants/*.yaml"))
+    inv_paths = sorted(glob.glob("./IO-III/tests/invariants/*.yaml") + glob.glob("./IO-II/tests/invariants/*.yaml"))
     if not inv_paths:
         print("No invariants found at ./IO-III/tests/invariants/*.yaml")
         return 0
