@@ -9,7 +9,7 @@ version: "v1.0"
 storage:
   local_only: true
   metadata_log_dir: "./IO-III/runtime/logs"
-  content_log_dir: "./IO-III/runtime/logs"
+  content_log_dir: "./IO-III/runtime/logs/content"
 
 logging:
   # Tier A: metadata (default ON)
