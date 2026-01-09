@@ -1,6 +1,6 @@
 ---
 id: "ARCH-001"
-title: "IO Persona Architecture"
+title: "ARCHITECTURE"
 type: "architecture"
 status: "locked"
 version: "1.3"
