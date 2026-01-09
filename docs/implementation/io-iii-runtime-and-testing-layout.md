@@ -89,3 +89,23 @@ These YAML files define “must not drift” invariants. They are intentionally 
 
 A test runner is intentionally not implemented in this phase.  
 These invariant specs exist to define stable governance guarantees first; a runner can be added later under `./IO-III/runtime/scripts/`.
+
+## Running invariant checks (local)
+
+### Dependency
+
+Install PyYAML:
+
+    python -m pip install pyyaml
+
+### Run
+
+From repo root:
+
+    ./IO-III/runtime/scripts/validate_invariants.py
+
+Exit codes:
+- 0 = all invariants passed
+- 1 = invariant failures
+- 2 = missing dependency (PyYAML)
+
