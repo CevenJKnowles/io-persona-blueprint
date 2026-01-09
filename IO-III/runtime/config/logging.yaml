@@ -1,0 +1,49 @@
+# IO-III Logging Configuration (Canonical)
+# Implements:
+# - ADR-003 (metadata logs default ON; content logs default OFF; local-only)
+# - ADR-004 (cloud calls auditable in metadata logs)
+
+schema: "io-iii-logging"
+version: "v1.0"
+
+storage:
+  local_only: true
+  metadata_log_dir: "./IO-III/runtime/logs"
+  content_log_dir: "./IO-III/runtime/logs"
+
+logging:
+  # Tier A: metadata (default ON)
+  metadata:
+    enabled: true
+    fields:
+      - "timestamp"
+      - "request_id"
+      - "mode"
+      - "selected_primary"
+      - "fallback_used"
+      - "fallback_reason"
+      - "latency_ms"
+      - "token_counts"
+      - "error_code"
+      - "provider"
+      - "model"
+      - "routing_source"   # explicit|override (cloud calls must populate)
+    retention_days: 30
+
+  # Tier B: content (default OFF)
+  content:
+    enabled: false
+    retention_days: 7
+    redaction:
+      enabled: true
+      patterns:
+        - "api_keys"
+        - "env_vars"
+        - "secrets"
+
+safety:
+  # Never log secrets (even when content logging is enabled)
+  never_log:
+    - "api_keys"
+    - "auth_headers"
+    - "env_vars"

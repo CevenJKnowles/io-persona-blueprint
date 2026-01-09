@@ -1,0 +1,44 @@
+# IO-III Routing Table (Canonical)
+# Implements:
+# - ADR-002 (mode-driven routing + primary/secondary)
+# - ADR-004 (no implicit cloud routing; local-first by default)
+
+schema: "io-iii-routing-table"
+version: "v1.0"
+
+rules:
+  # Routing is explicit and mode-driven only (no inference).
+  selection_method: "mode"
+
+  # Fallback triggers are operational only (not quality-based).
+  fallback_triggers:
+    - "runtime_failure"
+    - "timeout"
+    - "context_overflow"
+    - "model_unavailable"
+
+  # Hard boundaries (governance)
+  boundaries:
+    challenger_user_facing: false   # Challenger outputs are internal-only by default
+    single_voice_output: true       # Only one user-facing output per request cycle
+
+modes:
+  executor:
+    primary: "local:ministral-3"
+    secondary: "local:mistral"
+
+  explorer:
+    primary: "local:llama3.1"
+    secondary: "local:gemma"
+
+  challenger:
+    primary: "local:deepseek-r1"
+    secondary: "local:llama3.1"
+
+  synthesizer:
+    primary: "local:llama3.1"
+    secondary: "local:ministral-3"
+
+  visionary:
+    primary: "local:llama3.1"
+    secondary: "local:deepseek-r1"

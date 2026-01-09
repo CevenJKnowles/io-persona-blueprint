@@ -1,0 +1,37 @@
+# IO-III Providers Configuration (Canonical)
+# Implements:
+# - ADR-004 (cloud providers disabled by default; explicit opt-in only)
+# - ADR-001 (control plane abstracts providers)
+
+schema: "io-iii-providers"
+version: "v1.0"
+
+providers:
+  # Local runtime (default ON)
+  ollama:
+    enabled: true
+    base_url: "http://localhost:11434"
+    notes: "Local-first runtime"
+
+  # Cloud providers (default OFF)
+  openai:
+    enabled: false
+    env_key_name: "OPENAI_API_KEY"
+    notes: "Explicit opt-in only; never auto-enable"
+
+  anthropic:
+    enabled: false
+    env_key_name: "ANTHROPIC_API_KEY"
+    notes: "Explicit opt-in only; never auto-enable"
+
+  google:
+    enabled: false
+    env_key_name: "GOOGLE_API_KEY"
+    notes: "Explicit opt-in only; never auto-enable"
+
+policies:
+  # No automatic local → cloud fallback, ever.
+  allow_implicit_cloud_fallback: false
+
+  # Internal audience stays local unless explicitly overridden.
+  internal_to_cloud_requires_override: true
